@@ -22,6 +22,78 @@ BYTE_LIMIT = 255
 NOTES_PER_LINE = 5
 # Select Slice style
 CUT_EDGE_NOTES = True
+# C++ Source Code for playing files via a piezo buzzer connected to a pin on the Arduino
+ABOVE_NOTES_CODE = """
+/* 
+ * Plays an array of uint16 data generated using music2arduino.py does this by iterating, 
+ * playing each note for each duration. Specifics on the format covered else where. 
+ */
+
+// The pin number for the piezo buzzer
+const int PIEZO_PIN = 6;
+"""
+BELOW_NOTES_CODE = """
+void setup() {
+  // Nothing to do in here...
+}
+
+void loop() {
+  // Wait 3 seconds, then play the song....
+  delay(3000);
+  play_song(PIEZO_PIN, tune1, tune1Length, tickMillis);
+}
+
+/**
+ * Coverts a midi number to a frequency so a peizo buzzer can play it.
+ * 
+ * @param midi_num: A midi number to convert to a frequency, from 0 - 128
+ * @returns: A integer representing the frequency of the sound in hertz.
+ */
+int to_frequency(uint8_t midi_num) {
+  return (int)(pow(2, ((double)midi_num - 69) / 12) * 440);
+}
+
+/**
+ * Plays a song through a peizo buzzer using the arduino.
+ * 
+ * @param piezo_pin: The pin the piezo buzzer is on.
+ * @param song: The song, in the form of a array of 16 bit integers.
+ * @param len: The length of the song array.
+ * @param tick_speed: The milliseconds per duration tick to play notes at.
+ */
+void play_song(int piezo_pin, const uint16_t song[], const int len, double tick_speed) {
+  for(int i=0; i < len; i++) {
+    play_note_at(piezo_pin, i, song, tick_speed);
+  }
+}
+
+/**
+ * Plays a single note within a song. Used by play_song to play each note.
+ * 
+ * @param piezo_pin: The pin the piezo buzzer is on.
+ * @param note_i: The index of the note within the song array to play.
+ * @param song: The song, in the form of a array of 16 bit integers.
+ * @param tick_speed: The milliseconds per duration tick to play notes at.
+ */
+void play_note_at(int piezo_pin, int note_i, const uint16_t song[], double tick_speed) {
+  // Grab the note from flash memory...
+  uint16_t data = (uint16_t *)pgm_read_word(&song[note_i]);
+  // Split the note into its midi number and duration data
+  uint8_t midi_num = data >> 8;
+  uint8_t duration = (data << 8) >> 8;
+
+  if((midi_num >> 7) == 1) {
+    noTone(piezo_pin);
+  }
+  else {
+    tone(piezo_pin, to_frequency(midi_num));
+  }
+
+  delay((unsigned long)(duration * abs(tick_speed)));
+  noTone(piezo_pin);
+}
+"""
+
 
 # CLASS USED FOR PLAYING NOTES
 class NotePlayer:
@@ -532,6 +604,8 @@ def main(args: List[str]):
         byte_list = notes_to_arduino(byte_list)
 
         # Begin print source code
+        print("\n\nCopy and Paste the Code Below: \n")
+        print(ABOVE_NOTES_CODE)
         print("const uint16_t tune1[] PROGMEM = {", end='')
 
         for i, uint16 in enumerate(byte_list):
@@ -545,6 +619,7 @@ def main(args: List[str]):
         print("};")
         print("const unsigned int tune1Length = sizeof(tune1) / sizeof(uint16_t);")
         print(f"const double tickMillis = {tick_speed};  // Adjust to speed up and slow down the song...")
+        print(BELOW_NOTES_CODE)
 
 
 def note_cut(streamer: Stream, amount: float) -> Stream:
