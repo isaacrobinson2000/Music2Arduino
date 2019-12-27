@@ -377,15 +377,15 @@ def to_note_list(music: Score, track_priorities: Optional[List[int]], min_gap: I
 
     # Create the track stack...
     print("Chordifying Stuff...")
-    music_list = [track.chordify().sorted for track in [music.parts[i] for i in track_priorities]]
+    music_list = [track.flat.chordify().sorted for track in [music.parts[i] for i in track_priorities]]
     print("Starting My Stuff...")
 
     for i in range(len(music_list)):
         music_list[i] = [MidiNote(note_midi(notey), music_list[i].elementOffset(notey), notey.duration.quarterLength) for notey in music_list[i].notesAndRests]
 
     # Get the min and max offsets for all stream parts, and use it to add rests to the ends
-    min_offset = min([track[0].start for track in music_list])
-    max_offset = max([track[-1].end for track in music_list])
+    min_offset = min([track[0].start for track in music_list if (len(track) > 0)])
+    max_offset = max([track[-1].end for track in music_list if (len(track) > 0)])
 
     # Rest adding logic for edges...
     for track in music_list:
