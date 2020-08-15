@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e233a724-2362-4681-b71d-6dace487bd4f" name="Default Changelist" comment="">
+    <list default="true" id="e233a724-2362-4681-b71d-6dace487bd4f" name="Default Changelist" comment="Some bug fixes, now doesn't sometimes crash and burn...">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Music2Arduino.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Music2Arduino.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/music2arduino.py" beforeDir="false" afterPath="$PROJECT_DIR$/music2arduino.py" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,21 +29,16 @@
   </component>
   <component name="ProjectId" id="1VZuPb5f0dOHCS3HPWhqYRRbTpV" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="PropertiesComponent">
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager">
     <configuration name="music2arduino" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -53,7 +54,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/music2arduino.py" />
-      <option name="PARAMETERS" value="play &quot;$USER_HOME$/Downloads/ArduinoMusic/Gangnam_Style2.mid&quot;" />
+      <option name="PARAMETERS" value="&quot;$USER_HOME$/Downloads/ArduinoMusic/Gangnam_Style2.mid&quot;" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -85,7 +86,14 @@
       <option name="project" value="LOCAL" />
       <updated>1577480666240</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Some bug fixes, now doesn't sometimes crash and burn...">
+      <created>1577485114828</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1577485114828</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -98,9 +106,41 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Now prints entire required source code for playing files..." />
-    <option name="LAST_COMMIT_MESSAGE" value="Now prints entire required source code for playing files..." />
+    <MESSAGE value="Some bug fixes, now doesn't sometimes crash and burn..." />
+    <option name="LAST_COMMIT_MESSAGE" value="Some bug fixes, now doesn't sometimes crash and burn..." />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="424" y="177" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1597357151889">
+      <screen x="0" y="0" width="1920" height="1038" />
+    </state>
+    <state x="424" y="177" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1038@0.0.1920.1038" timestamp="1597357151889" />
+    <state x="613" y="100" key="CommitChangelistDialog2" timestamp="1597336166326">
+      <screen x="0" y="0" width="1920" height="1038" />
+    </state>
+    <state x="613" y="100" key="CommitChangelistDialog2/0.0.1920.1038@0.0.1920.1038" timestamp="1597336166326" />
+    <state width="1897" height="274" key="GridCell.Tab.0.bottom" timestamp="1597369297288">
+      <screen x="0" y="0" width="1920" height="1038" />
+    </state>
+    <state width="1897" height="274" key="GridCell.Tab.0.bottom/0.0.1920.1038@0.0.1920.1038" timestamp="1597369297288" />
+    <state width="1897" height="274" key="GridCell.Tab.0.center" timestamp="1597369297288">
+      <screen x="0" y="0" width="1920" height="1038" />
+    </state>
+    <state width="1897" height="274" key="GridCell.Tab.0.center/0.0.1920.1038@0.0.1920.1038" timestamp="1597369297288" />
+    <state width="1897" height="274" key="GridCell.Tab.0.left" timestamp="1597369297287">
+      <screen x="0" y="0" width="1920" height="1038" />
+    </state>
+    <state width="1897" height="274" key="GridCell.Tab.0.left/0.0.1920.1038@0.0.1920.1038" timestamp="1597369297287" />
+    <state width="1897" height="274" key="GridCell.Tab.0.right" timestamp="1597369297288">
+      <screen x="0" y="0" width="1920" height="1038" />
+    </state>
+    <state width="1897" height="274" key="GridCell.Tab.0.right/0.0.1920.1038@0.0.1920.1038" timestamp="1597369297288" />
+    <state x="382" y="256" key="SettingsEditor" timestamp="1597336059330">
+      <screen x="0" y="0" width="1920" height="1038" />
+    </state>
+    <state x="382" y="256" key="SettingsEditor/0.0.1920.1038@0.0.1920.1038" timestamp="1597336059330" />
   </component>
 </project>
