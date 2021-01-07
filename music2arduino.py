@@ -182,7 +182,7 @@ class NotePlayer:
         # Compute sampling factor... Effects how fast the sine wave oscillates...
         sample_factor = (float(frequency) * 2 * numpy.pi) / self._SAMPLING_RATE
         # Compute numpy array of audio sample for this tone, using the sine wave...
-        samples = numpy.array(float(volume) * numpy.sin(numpy.arange(sample_len) * sample_factor), dtype=numpy.float32)
+        samples = (float(volume) * numpy.sin(numpy.arange(sample_len) * sample_factor)).astype(numpy.float32)
         # If note is shorter then 600 samples, shorten front and back to fit the sample
         if(len(samples) < 600):
             smooth_front = self.SMOOTH_FRONT[:int(len(samples) // 2)]
@@ -454,7 +454,7 @@ def _to_note_list(music_stack: List[List[MidiNote]], new_list: List[MidiNote], s
         else:
             new_list.append(temp_note)
 
-        # Increment index...183.0
+        # Increment index...
         i += 1
 
 # TODO: Write time search, should be even faster then binary search
@@ -500,33 +500,54 @@ def to_8_bits(value: int) -> str:
     return f"{value:08b}"
 
 
-def scale_durations(track: List[MidiNote], track_speeds: List[TempoChange]) -> Tuple[float, List[Tuple[Optional[int], int]]]:
+def apply_tempos(track: List[MidiNote], track_speeds: List[TempoChange]) -> List[Tuple[Optional[int], float, float]]:
     """
-    Scales the durations of the note list in-place in order to fit within the specified integer limit. It does this by
-    setting the limit equal to the longest duration in the note list and scaling all of the rest of the notes to
-    match the scale between the longest duration and the limit.
+    Apply tempos to the passed track list, returning a list of notes with durations and starting points in seconds.
 
-    :param track: A list of midinotes, being the music to scale the durations for.
-    :param track_speeds: A list of TempoChange objects, being any changes in speed to the track, if they occur...
-    :return: Two items in a tuple:
-                - A float being the milliseconds per tick to play the song at a normal speed.
-                - A list of tuples with two integers, first integer is midi tone number, second integer is the duration
-                  from 1-255.
+    :param track: The track to apply tempos to, a list of MidiNote.
+    :param track_speeds: The list of tempos for the track, a list of TempoChange.
+    :return: A list of length 3 tuples, containing:
+                - An optional integer being the midi tone number, or None if this is a rest.
+                - A float being the duration of the note in seconds.
+                - A float being the offset of the note in seconds.
     """
     # Iter 1: Get the longest note in the list, and convert all durations to seconds....
     current_track_speed = 0
     notes_in_seconds = []
+    track_location = 0
 
-    for notey in track:
+    for i, notey in enumerate(track):
         # If we move into the interval of next tempo change object, move to the next tempo change object...
         if(current_track_speed + 1 < len(track_speeds)):
             if(notey.start >= track_speeds[current_track_speed + 1].start_offset):
                 current_track_speed += 1
 
-        notes_in_seconds.append((notey.midi_num, notey.duration * track_speeds[current_track_speed].seconds_per_quarter))
+        if(i == 0):
+            track_location = notey.start * track_speeds[current_track_speed].seconds_per_quarter
 
-    # Computing maximum seconds spent by a single note...
-    max_secs = max([duration for (tone, duration) in notes_in_seconds])
+        duration = notey.duration * track_speeds[current_track_speed].seconds_per_quarter
+        notes_in_seconds.append((notey.midi_num, duration,
+                                 track_location))
+        track_location += duration
+
+    return notes_in_seconds
+
+
+def scale_durations(track_seconds: List[Tuple[Optional[int], float, float]]) -> Tuple[float, List[Tuple[Optional[int], int]]]:
+    """
+    Scales the durations of the note list in-place in order to fit within the specified integer limit. It does this by
+    setting the limit equal to the longest duration in the note list and scaling all of the rest of the notes to
+    match the scale between the longest duration and the limit.
+
+    :param track_seconds: A list of midi notes, being in seconds as from the apply_tempos method.
+
+    :return: Two (or three) items in a tuple:
+                - A float being the milliseconds per tick to play the song at a normal speed.
+                - A list of tuples with two integers, first integer is midi tone number, second integer is the duration
+                  from 1-255.
+    """
+    # Computing minimum seconds spent by a single note...
+    max_secs = max(duration for (tone, duration, offset) in track_seconds)
 
     # Compute the tick speed for the song... Since the longest note gets a value of 255 ticks...
     tick_speed = (max_secs / BYTE_LIMIT) * 1000
@@ -535,11 +556,46 @@ def scale_durations(track: List[MidiNote], track_speeds: List[TempoChange]) -> T
     scaled_durations: List[Tuple[Optional[int], int]] = []
 
     # Now Iter 2... Scale the durations
-    for tone, duration in notes_in_seconds:
+    for tone, duration, offset in track_seconds:
         scaled_durations.append((None if(tone == 0) else tone, int((duration / max_secs) * BYTE_LIMIT)))
 
     return tick_speed, scaled_durations
 
+
+def scale_durations_multitrack(track_seconds: List[Tuple[str, float, float]]) -> Tuple[float, List[Tuple[str, int, int]]]:
+    """
+    Scales the durations of the note list in-place in order to fit within the specified integer limit. It does this by
+    setting the limit equal to the longest duration in the note list and scaling all of the rest of the notes to
+    match the scale between the longest duration and the limit. This is the multi-track version.
+
+    :param track_seconds: A list of midi notes, being in seconds as from the multi-track method.
+
+    :return: Two (or three) items in a tuple:
+                - A float being the milliseconds per tick to play the song at a normal speed.
+                - A list of tuples with a string being the note type, and 2 integers, being the tone, and then duration
+                  of the note scaled...
+    """
+    # (n_type, tone, dur)
+    max_secs = max(dur for (n_type, tone, dur) in track_seconds)
+
+    tick_speed = (max_secs / BYTE_LIMIT) * 1000
+
+    scaled_durations: List[Tuple[str, int, int]] = []
+
+    for n_type, tone, dur in track_seconds:
+        scaled_durations.append((n_type, int(tone), int((dur / max_secs) * BYTE_LIMIT)))
+
+    return (tick_speed, scaled_durations)
+
+
+def get_tempo_list(stream: Score) -> List[TempoChange]:
+    """
+    Get the list of tempo changes for this musical score.
+
+    :param stream: The music21 score to get tempos of.
+    :return: A list of TempoChange objects, representing locations where the tempo has changed in the musical score.
+    """
+    return [TempoChange(obj.secondsPerQuarter(), start) for (start, end, obj) in stream.metronomeMarkBoundaries()]
 
 
 def stream_to_notes(stream: Score, priority: List[int] = None) -> Tuple[float, List[Tuple[Optional[int], int]]]:
@@ -554,11 +610,10 @@ def stream_to_notes(stream: Score, priority: List[int] = None) -> Tuple[float, L
                   from 1-255.
     """
     # Gather all tempo changes through out the song...
-    tempos = [TempoChange(obj.secondsPerQuarter(), start) for (start, end, obj) in stream.metronomeMarkBoundaries()]
     print(stream.metronomeMarkBoundaries())
 
     # Convert to note list -> scale the durations -> then return the results...
-    return scale_durations(to_note_list(stream, priority), tempos)
+    return scale_durations(apply_tempos(to_note_list(stream, priority), get_tempo_list(stream)))
 
 
 def notes_to_arduino(noteys: List[Tuple[Optional[int], int]]) -> List[str]:
@@ -668,6 +723,78 @@ def debug_main(args: List[str]):
         print(f"Milliseconds per tick: {tick_speed}")
 
 
+def multi_track_main(args: List[str]):
+    if(len(args) > 0):
+        import heapq
+        # Parsing arguments to get priority list and file to convert
+        streamer: Score = parse(args[0])
+        args = args[1:]
+
+        if(len(args) == 0):
+            priority_lists = [[num] for num in list(range(len(streamer.parts)))]
+        else:
+            priority_lists = [[int(num.strip()) for num in arg.split(",")] for arg in args]
+
+        print(f"Number of tracks: {len(priority_lists)}")
+
+        # Begin processing
+        t = get_tempo_list(streamer)
+        # We reverse tuples so track offset is considered first.
+        results = [apply_tempos(to_note_list(streamer, priority_list), t) for priority_list in priority_lists]
+        # We reverse all tones and also remove all rests since we must execute a clear after every note...
+        results = [[n[::-1] for n in lst if((n[0] is not None) and (n[0] != 0))] for lst in results if(len(lst) > 0)]
+
+        starts_and_ends = [[] for i in range(len(results))]
+
+        for i, lst in enumerate(results):
+            for off, dur, tone in lst:
+                starts_and_ends[i].append((off, tone, "start"))
+                starts_and_ends[i].append((off + dur, tone, "end"))
+
+        # Custom merge algorithm: We need to merge notes based on which has the smaller offset...
+        # This can be done efficiently with a heap, which python has.
+        heap = []
+        offset = [0 for i in range(len(starts_and_ends))]
+        merged = []
+
+        for i, lst in enumerate(starts_and_ends):
+            heapq.heappush(heap, (lst[0], i))
+
+        # TODO: Can be simplified, think about how...
+
+        while(len(heap) > 0):
+            next_note, idx = heapq.heappop(heap)
+            merged.append(next_note)
+            offset[idx] += 1
+            if(offset[idx] < len(starts_and_ends[idx])):
+                heapq.heappush(heap, (starts_and_ends[idx][offset[idx]], idx))
+
+        final_note_instructions = []
+
+        for i, (off, tone, n_type) in enumerate(merged):
+            if(i < (len(merged) - 1)):
+                final_note_instructions.append((n_type, tone, merged[i + 1][0] - off))
+            else:
+                final_note_instructions.append((n_type, tone, 0))
+
+        print("\n\nCopy and Paste the Code Below: \n")
+        print("const uint16_t PROGMEM music[] = {", end='')
+
+        tick_speed, final_note_instructions = scale_durations_multitrack(final_note_instructions)
+
+        for i, (n_type, tone, dur) in enumerate(final_note_instructions):
+            if(i % NOTES_PER_LINE == 0):
+                print()
+
+            ender = ", " if (i < len(final_note_instructions) - 1) else "\n"
+
+            print(f"0b{1 * (n_type == 'end')}{to_8_bits(tone)[1:]}{to_8_bits(dur)}", end=ender)
+
+        print("};")
+        print("const size_t musicLen = sizeof(music) / sizeof(uint16_t);")
+        print(f"const float millisPerTick = {tick_speed};")
+
+
 def play_main(args: List[str]):
     """
     Play main method, converts music file to a arduino byte list, and then plays it as it would be played on the
@@ -741,6 +868,8 @@ if(__name__ == '__main__'):
     print(list(sys.argv))
     if(len(sys.argv) >= 2 and sys.argv[1] == "debug"):
         debug_main(sys.argv[2:])
+    elif(len(sys.argv) >= 2 and sys.argv[1] == "multitrack"):
+        multi_track_main(sys.argv[2:])
     elif(len(sys.argv) >= 2 and sys.argv[1] == "play"):
         play_main(sys.argv[2:])
     else:
