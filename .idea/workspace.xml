@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e233a724-2362-4681-b71d-6dace487bd4f" name="Default Changelist" comment="Some bug fixes, now doesn't sometimes crash and burn...">
+    <list default="true" id="e233a724-2362-4681-b71d-6dace487bd4f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/music2arduino.py" beforeDir="false" afterPath="$PROJECT_DIR$/music2arduino.py" afterDir="false" />
     </list>
@@ -47,7 +47,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/music2arduino.py" />
-      <option name="PARAMETERS" value="multitrack &quot;$USER_HOME$/Downloads/ArduinoMusic/SpongeBob_SquarePants_Stadium_Rave_A.mid&quot; 0 1 2 3" />
+      <option name="PARAMETERS" value="multitrack &quot;$USER_HOME$/Downloads/ArduinoMusic/Mission_Impossible_Theme.mid&quot;" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -94,7 +94,14 @@
       <option name="project" value="LOCAL" />
       <updated>1597461813658</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Initial multitrack support added :).">
+      <created>1609984812205</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1609984812205</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -112,36 +119,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Now prints entire required source code for playing files..." />
     <MESSAGE value="Some bug fixes, now doesn't sometimes crash and burn..." />
-    <option name="LAST_COMMIT_MESSAGE" value="Some bug fixes, now doesn't sometimes crash and burn..." />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="418" y="176" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1609984615985">
-      <screen x="0" y="0" width="1920" height="1036" />
-    </state>
-    <state x="418" y="176" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1036@0.0.1920.1036" timestamp="1609984615985" />
-    <state x="613" y="100" key="CommitChangelistDialog2" timestamp="1604510076520">
-      <screen x="0" y="0" width="1920" height="1036" />
-    </state>
-    <state x="613" y="100" key="CommitChangelistDialog2/0.0.1920.1036@0.0.1920.1036" timestamp="1604510076520" />
-    <state width="1897" height="234" key="GridCell.Tab.0.bottom" timestamp="1609984432107">
-      <screen x="0" y="0" width="1920" height="1036" />
-    </state>
-    <state width="1897" height="234" key="GridCell.Tab.0.bottom/0.0.1920.1036@0.0.1920.1036" timestamp="1609984432107" />
-    <state width="1897" height="234" key="GridCell.Tab.0.center" timestamp="1609984432105">
-      <screen x="0" y="0" width="1920" height="1036" />
-    </state>
-    <state width="1897" height="234" key="GridCell.Tab.0.center/0.0.1920.1036@0.0.1920.1036" timestamp="1609984432105" />
-    <state width="1897" height="234" key="GridCell.Tab.0.left" timestamp="1609984432104">
-      <screen x="0" y="0" width="1920" height="1036" />
-    </state>
-    <state width="1897" height="234" key="GridCell.Tab.0.left/0.0.1920.1036@0.0.1920.1036" timestamp="1609984432104" />
-    <state width="1897" height="234" key="GridCell.Tab.0.right" timestamp="1609984432106">
-      <screen x="0" y="0" width="1920" height="1036" />
-    </state>
-    <state width="1897" height="234" key="GridCell.Tab.0.right/0.0.1920.1036@0.0.1920.1036" timestamp="1609984432106" />
-    <state x="623" y="228" width="672" height="678" key="search.everywhere.popup" timestamp="1609983202430">
-      <screen x="0" y="0" width="1920" height="1036" />
-    </state>
-    <state x="623" y="228" width="672" height="678" key="search.everywhere.popup/0.0.1920.1036@0.0.1920.1036" timestamp="1609983202430" />
+    <MESSAGE value="Initial multitrack support added :)." />
+    <option name="LAST_COMMIT_MESSAGE" value="Initial multitrack support added :)." />
   </component>
 </project>

@@ -14,7 +14,7 @@ from music21.stream import Score
 
 # Used for test playing ardiuno melody results...
 import pyaudio
-import numpy
+import numpy as np
 
 # Maximum number that can fit in a byte
 BYTE_LIMIT = 255
@@ -98,7 +98,7 @@ void play_note_at(int piezo_pin, int note_i, const uint16_t song[], double tick_
 # CLASS USED FOR PLAYING NOTES
 class NotePlayer:
     # Used for smoothing the ends of the sine waves to remove "clicking sounds" when transitioning between notes...
-    SMOOTH_FRONT = numpy.arange(300) / 300
+    SMOOTH_FRONT = np.arange(300) / 300
     SMOOTH_BACK = SMOOTH_FRONT[::-1]
 
     def __init__(self, sampling_rate: int = 44100, volume: float = 0.5):
@@ -169,7 +169,7 @@ class NotePlayer:
         # Write the samples...
         self._output_stream.write(samples.tostring())
 
-    def _get_sine_samples(self, frequency: float, duration: float, volume: float) -> numpy.ndarray:
+    def _get_sine_samples(self, frequency: float, duration: float, volume: float) -> np.ndarray:
         """
         Private Method: Gets the sine wave samples needed to play an audio tone for the given values.
 
@@ -180,9 +180,9 @@ class NotePlayer:
         """
         sample_len = int(duration * self._SAMPLING_RATE)
         # Compute sampling factor... Effects how fast the sine wave oscillates...
-        sample_factor = (float(frequency) * 2 * numpy.pi) / self._SAMPLING_RATE
+        sample_factor = (float(frequency) * 2 * np.pi) / self._SAMPLING_RATE
         # Compute numpy array of audio sample for this tone, using the sine wave...
-        samples = (float(volume) * numpy.sin(numpy.arange(sample_len) * sample_factor)).astype(numpy.float32)
+        samples = (float(volume) * np.sin(np.arange(sample_len) * sample_factor)).astype(np.float32)
         # If note is shorter then 600 samples, shorten front and back to fit the sample
         if(len(samples) < 600):
             smooth_front = self.SMOOTH_FRONT[:int(len(samples) // 2)]
@@ -723,6 +723,9 @@ def debug_main(args: List[str]):
         print(f"Milliseconds per tick: {tick_speed}")
 
 
+SINE_WAVE_LENGTH = 300
+SAMPLES_PER_LINE = 10
+
 def multi_track_main(args: List[str]):
     if(len(args) > 0):
         import heapq
@@ -760,8 +763,6 @@ def multi_track_main(args: List[str]):
         for i, lst in enumerate(starts_and_ends):
             heapq.heappush(heap, (lst[0], i))
 
-        # TODO: Can be simplified, think about how...
-
         while(len(heap) > 0):
             next_note, idx = heapq.heappop(heap)
             merged.append(next_note)
@@ -778,13 +779,26 @@ def multi_track_main(args: List[str]):
                 final_note_instructions.append((n_type, tone, 0))
 
         print("\n\nCopy and Paste the Code Below: \n")
+
+        # Generate and dump sine wave based on track count....
+        print("const PROGMEM uint8_t sineWave[] = {", end='')
+
+        sine_wave = (((np.sin(np.linspace(0, 2 * np.pi, SINE_WAVE_LENGTH)) + 1) / 2) * (255 / len(priority_lists))).astype(np.uint8)
+
+        for i, val in enumerate(sine_wave):
+            if(i % SAMPLES_PER_LINE == 0):
+                print("\n  ", end='')
+            print(val, end=", " if (i < len(sine_wave) - 1) else "\n};\n")
+
+        print("const size_t sineWaveLen = sizeof(sineWave) / sizeof(uint8_t);\n\n")
+
         print("const uint16_t PROGMEM music[] = {", end='')
 
         tick_speed, final_note_instructions = scale_durations_multitrack(final_note_instructions)
 
         for i, (n_type, tone, dur) in enumerate(final_note_instructions):
             if(i % NOTES_PER_LINE == 0):
-                print()
+                print("\n  ", end='')
 
             ender = ", " if (i < len(final_note_instructions) - 1) else "\n"
 
