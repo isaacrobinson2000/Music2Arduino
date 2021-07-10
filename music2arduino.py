@@ -877,7 +877,6 @@ def play_main(args: List[str]):
             del note_player
 
 # TODO: BETTER CLI API
-# TODO: MULTITRACK SUPPORT
 if(__name__ == '__main__'):
     print(list(sys.argv))
     if(len(sys.argv) >= 2 and sys.argv[1] == "debug"):
